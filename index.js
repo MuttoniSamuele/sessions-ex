@@ -3,6 +3,7 @@ import { fileURLToPath } from "url";
 import express from "express";
 import session from "express-session";
 import bodyParser from "body-parser";
+import bcrypt from "bcrypt";
 
 const PORT = 8080;
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -30,9 +31,14 @@ app.get("/error", (_req, res) => {
   res.sendFile(__dirname + "/views/error.html");
 });
 
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
   const { username, password } = req.body;
-  if (username === "mutti" && password === "password") {
+  // The password is password
+  const isPswCorrect = await bcrypt.compare(
+    password,
+    "$2b$04$bz2pGNyZ6dKxev4E5eUwU.SQyUBL1sdBqrM/Fen3RV2OjE76wYb5i"
+  );
+  if (username === "mutti" && isPswCorrect) {
     req.session.isLoggedIn = true;
     res.redirect("/");
   } else {
